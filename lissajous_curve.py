@@ -1,7 +1,7 @@
 import sys
 import random
 from PySide2.QtCore import Qt, Slot
-from PySide2.QtGui import QPainter
+from PySide2.QtGui import QPainter, QBrush, QPen
 from PySide2.QtWidgets import (QAction, QApplication, QHeaderView, QHBoxLayout, QLabel, QLineEdit,
                                QMainWindow, QPushButton, QTableWidget, QTableWidgetItem,
                                QVBoxLayout, QWidget, QDoubleSpinBox)
@@ -85,7 +85,7 @@ class LissajousInterface(QWidget):
         self.interfaceLayout.addLayout(self.amplitudeLayout)
         self.interfaceLayout.addLayout(self.omegaLayout)
         self.interfaceLayout.addLayout(self.phiLayout)
-        
+
         self.setLayout(self.interfaceLayout)
 
 
@@ -93,21 +93,22 @@ class LissajousCurve(QWidget):
     def __init__(self):
         QWidget.__init__(self)
 
-        self.hello = ["Hallo Welt", "Hei maailma", "Hola Mundo", "Привет мир"]
+        # temporary mock values
+        a = self.height() * 2 / 3
+        b = self.height() * 2 / 3
+        aOmega = 1
+        bOmega = 2
+        phi = 1.57
+        t = 0
 
-        self.button = QPushButton("Click me!")
-        self.text = QLabel("Hello World")
-        self.text.setAlignment(Qt.AlignCenter)
+    def paintEvent(self, e):
+        # draw border
+        painter = QPainter(self)
+        painter.setPen(QPen(Qt.gray, 1, Qt.SolidLine))
+        painter.drawRect((self.width() - self.height()) / 2, 0, self.height()-1 , self.height()-1)
+        
+        # draw sinusoide
 
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.text)
-        self.layout.addWidget(self.button)
-        self.setLayout(self.layout)
-
-        self.button.clicked.connect(self.magic)
-
-    def magic(self):
-        self.text.setText(random.choice(self.hello))
 
 class MainWindow(QMainWindow):
     def __init__(self, layout):
