@@ -4,28 +4,30 @@ from PySide2.QtCore import Qt, Slot
 from PySide2.QtGui import QPainter
 from PySide2.QtWidgets import (QAction, QApplication, QHeaderView, QHBoxLayout, QLabel, QLineEdit,
                                QMainWindow, QPushButton, QTableWidget, QTableWidgetItem,
-                               QVBoxLayout, QWidget)
+                               QVBoxLayout, QWidget, QDoubleSpinBox)
 from PySide2.QtCharts import QtCharts
 
 
 class LissajousInterface(QWidget):
     def __init__(self):
         QWidget.__init__(self)
-        self.hello = ["Hallo Welt", "Hei maailma", "Hola Mundo", "Привет мир"]
 
-        self.button = QPushButton("Click me!")
-        self.text = QLabel("Hello World")
-        self.text.setAlignment(Qt.AlignCenter)
+        self.aAmplitude_spinBox = QDoubleSpinBox()
+        self.aAmplitude_spinBox.setRange(0, 3.14)
+        self.aAmplitude_spinBox.setWrapping(False)
+        self.aAmplitude_spinBox.setValue(0)
+        self.aAmplitude_spinBox.setSingleStep(0.01)
 
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.text)
-        self.layout.addWidget(self.button)
-        self.setLayout(self.layout)
+        self.bAmplitude_spinBox = QDoubleSpinBox()
+        self.bAmplitude_spinBox.setRange(0, 3.14)
+        self.bAmplitude_spinBox.setWrapping(False)
+        self.bAmplitude_spinBox.setValue(0)
+        self.bAmplitude_spinBox.setSingleStep(0.01)
 
-        self.button.clicked.connect(self.magic)
-
-    def magic(self):
-        self.text.setText(random.choice(self.hello))
+        self.amplitudeLayout = QVBoxLayout()
+        self.amplitudeLayout.addWidget(self.aAmplitude_spinBox)
+        self.amplitudeLayout.addWidget(self.bAmplitude_spinBox)
+        self.setLayout(self.amplitudeLayout)
 
 class LissajousCurve(QWidget):
     def __init__(self):
