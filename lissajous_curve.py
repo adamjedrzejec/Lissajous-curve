@@ -34,6 +34,11 @@ class LissajousInterface(QWidget):
         self.bOmega_spinBox = QDoubleSpinBox()
         self.configureSpinBox(self.bOmega_spinBox)
 
+        self.phiLabel = QLabel("φ")
+        self.phiLabel.setFixedWidth(20)
+        self.phi_spinBox = QDoubleSpinBox()
+        self.configureSpinBox(self.phi_spinBox)
+
         self.configureLayout()
 
     def configureSpinBox(self, amp):
@@ -71,10 +76,16 @@ class LissajousInterface(QWidget):
         self.omegaLayout.addLayout(self.aOmegaWithLayout)
         self.omegaLayout.addLayout(self.bOmegaWithLayout)
 
+        # set omega layout
+        self.phiLayout = QHBoxLayout()
+        self.phiLayout.addWidget(self.phiLabel)
+        self.phiLayout.addWidget(self.phi_spinBox)
+
         # set general interface layout
         self.interfaceLayout.addLayout(self.amplitudeLayout)
         self.interfaceLayout.addLayout(self.omegaLayout)
-
+        self.interfaceLayout.addLayout(self.phiLayout)
+        
         self.setLayout(self.interfaceLayout)
 
 
