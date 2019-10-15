@@ -12,22 +12,71 @@ class LissajousInterface(QWidget):
     def __init__(self):
         QWidget.__init__(self)
 
+        # set amplitudes
+        self.aAmpLabel = QLabel("A:")
+        self.aAmpLabel.setFixedWidth(20)
         self.aAmplitude_spinBox = QDoubleSpinBox()
-        self.aAmplitude_spinBox.setRange(0, 3.14)
-        self.aAmplitude_spinBox.setWrapping(False)
-        self.aAmplitude_spinBox.setValue(0)
-        self.aAmplitude_spinBox.setSingleStep(0.01)
+        self.configureSpinBox(self.aAmplitude_spinBox)
 
+        self.bAmpLabel = QLabel("B:")
+        self.bAmpLabel.setFixedWidth(20)
         self.bAmplitude_spinBox = QDoubleSpinBox()
-        self.bAmplitude_spinBox.setRange(0, 3.14)
-        self.bAmplitude_spinBox.setWrapping(False)
-        self.bAmplitude_spinBox.setValue(0)
-        self.bAmplitude_spinBox.setSingleStep(0.01)
+        self.configureSpinBox(self.bAmplitude_spinBox)
+
+        # set omegas
+        self.aOmegaLabel = QLabel("ɷA:")
+        self.aOmegaLabel.setFixedWidth(30)
+        self.aOmega_spinBox = QDoubleSpinBox()
+        self.configureSpinBox(self.aOmega_spinBox)
+
+        self.bOmegaLabel = QLabel("ɷB:")
+        self.bOmegaLabel.setFixedWidth(30)
+        self.bOmega_spinBox = QDoubleSpinBox()
+        self.configureSpinBox(self.bOmega_spinBox)
+
+        self.configureLayout()
+
+    def configureSpinBox(self, amp):
+        amp.setRange(0, 10)
+        amp.setWrapping(False)
+        amp.setValue(0)
+        amp.setSingleStep(0.01)
+
+    def configureLayout(self):
+        self.interfaceLayout = QHBoxLayout()
+
+        # set amplitude layout
+        self.aAmpWithLayout = QHBoxLayout()
+        self.aAmpWithLayout.addWidget(self.aAmpLabel)
+        self.aAmpWithLayout.addWidget(self.aAmplitude_spinBox)
+
+        self.bAmpWithLayout = QHBoxLayout()
+        self.bAmpWithLayout.addWidget(self.bAmpLabel)
+        self.bAmpWithLayout.addWidget(self.bAmplitude_spinBox)
 
         self.amplitudeLayout = QVBoxLayout()
-        self.amplitudeLayout.addWidget(self.aAmplitude_spinBox)
-        self.amplitudeLayout.addWidget(self.bAmplitude_spinBox)
-        self.setLayout(self.amplitudeLayout)
+        self.amplitudeLayout.addLayout(self.aAmpWithLayout)
+        self.amplitudeLayout.addLayout(self.bAmpWithLayout)
+
+        # set omega layout
+        self.aOmegaWithLayout = QHBoxLayout()
+        self.aOmegaWithLayout.addWidget(self.aOmegaLabel)
+        self.aOmegaWithLayout.addWidget(self.aOmega_spinBox)
+
+        self.bOmegaWithLayout = QHBoxLayout()
+        self.bOmegaWithLayout.addWidget(self.bOmegaLabel)
+        self.bOmegaWithLayout.addWidget(self.bOmega_spinBox)
+
+        self.omegaLayout = QVBoxLayout()
+        self.omegaLayout.addLayout(self.aOmegaWithLayout)
+        self.omegaLayout.addLayout(self.bOmegaWithLayout)
+
+        # set general interface layout
+        self.interfaceLayout.addLayout(self.amplitudeLayout)
+        self.interfaceLayout.addLayout(self.omegaLayout)
+
+        self.setLayout(self.interfaceLayout)
+
 
 class LissajousCurve(QWidget):
     def __init__(self):
@@ -78,6 +127,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     # QWidget
     lissInterface = LissajousInterface()
+    lissInterface.setFixedHeight(150)
+
     lissCurve = LissajousCurve()
 
     layout = QVBoxLayout()
