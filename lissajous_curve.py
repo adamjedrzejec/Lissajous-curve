@@ -1,4 +1,5 @@
 import sys
+import time
 import random
 from PySide2.QtCore import Qt, Slot
 from PySide2.QtGui import QPainter, QBrush, QPen
@@ -7,6 +8,9 @@ from PySide2.QtWidgets import (QAction, QApplication, QHeaderView, QHBoxLayout, 
                                QVBoxLayout, QWidget, QDoubleSpinBox)
 from PySide2.QtCharts import QtCharts
 
+import numpy as np
+from matplotlib.backends.backend_qt5agg import (FigureCanvas, NavigationToolbar2QT as NavigationToolbar)
+from matplotlib.figure import Figure
 
 class LissajousInterface(QWidget):
     def __init__(self):
@@ -91,15 +95,17 @@ class LissajousInterface(QWidget):
 
 class LissajousCurve(QWidget):
     def __init__(self):
-        QWidget.__init__(self)
+        super().__init__()
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        
+        static_canvas = FigureCanvas(Figure(figsize=(5, 3)))
+        layout.addWidget(static_canvas)
 
-        # temporary mock values
-        a = self.height() * 2 / 3
-        b = self.height() * 2 / 3
-        aOmega = 1
-        bOmega = 2
-        phi = 1.57
-        t = 0
+        self._static_ax = static_canvas.figure.subplots()
+        t = np.linspace(0, 10, 501)
+        self._static_ax.plot(5*np.sin(2*t), 5*np.sin(t))
+
 
     def paintEvent(self, e):
         # draw border
@@ -142,7 +148,7 @@ if __name__ == "__main__":
     lissInterface.setFixedHeight(150)
 
     lissCurve = LissajousCurve()
-
+    
     layout = QVBoxLayout()
     layout.addWidget(lissInterface)
     layout.addWidget(lissCurve)
