@@ -48,7 +48,7 @@ class LissajousInterface(QWidget):
     def configureSpinBox(self, amp):
         amp.setRange(0, 10)
         amp.setWrapping(False)
-        amp.setValue(0)
+        amp.setValue(5)
         amp.setSingleStep(0.01)
 
     def configureLayout(self):
@@ -96,16 +96,31 @@ class LissajousInterface(QWidget):
 class LissajousCurve(QWidget):
     def __init__(self):
         super().__init__()
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
         self.setLayout(layout)
-        
+
         static_canvas = FigureCanvas(Figure(figsize=(5, 3)))
+        static_canvas.setFixedWidth(self.height() - 1)
         layout.addWidget(static_canvas)
 
         self._static_ax = static_canvas.figure.subplots()
-        t = np.linspace(0, 10, 501)
-        self._static_ax.plot(5*np.sin(2*t), 5*np.sin(t))
+        self.setVariables(5,5,2,1,5)
+        self.updatePlot()
 
+        self.formula = QLabel("y0 = " + str(self.aAmp) + " * sin(" + str(self.aOmega) + "t + " + str(self.phaseDiff) + ")")
+        layout.addWidget(self.formula)
+
+    @Slot()
+    def setVariables(self, aAmp, bAmp, aOmega, bOmega, phaseDiff):
+        self.aAmp = aAmp
+        self.bAmp = bAmp
+        self.aOmega = aOmega
+        self.bOmega = bOmega
+        self.phaseDiff = phaseDiff
+
+    def updatePlot(self):
+        t = np.linspace(0, 10, 501)
+        self._static_ax.plot(self.aAmp*np.sin(self.aOmega*t), self.bAmp*np.sin(self.bOmega*t))
 
     def paintEvent(self, e):
         # draw border
