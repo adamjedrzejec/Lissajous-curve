@@ -2,7 +2,7 @@ import sys
 import time
 import random
 from PySide2.QtCore import Qt, Slot
-from PySide2.QtGui import QPainter, QBrush, QPen
+from PySide2.QtGui import QFont
 from PySide2.QtWidgets import (QAction, QApplication, QHeaderView, QHBoxLayout, QLabel, QLineEdit,
                                QMainWindow, QPushButton, QTableWidget, QTableWidgetItem,
                                QVBoxLayout, QWidget, QSpinBox, QDoubleSpinBox)
@@ -21,32 +21,32 @@ class LissajousInterface(QWidget):
         self.aAmpLabel = QLabel("A:")
         self.aAmpLabel.setFixedWidth(20)
         self.aAmplitude_spinBox = QDoubleSpinBox()
-        self.configureSpinBox(self.aAmplitude_spinBox)
+        self.configureAmpSpinBox(self.aAmplitude_spinBox)
         self.aAmplitude_spinBox.valueChanged.connect(self.valueChanged)
 
         self.bAmpLabel = QLabel("B:")
         self.bAmpLabel.setFixedWidth(20)
         self.bAmplitude_spinBox = QDoubleSpinBox()
-        self.configureSpinBox(self.bAmplitude_spinBox)
+        self.configureAmpSpinBox(self.bAmplitude_spinBox)
         self.bAmplitude_spinBox.valueChanged.connect(self.valueChanged)
 
         # set omegas
         self.aOmegaLabel = QLabel("ɷA:")
         self.aOmegaLabel.setFixedWidth(30)
         self.aOmega_spinBox = QSpinBox()
-        self.configureSpinBox(self.aOmega_spinBox)
+        self.configureOmegaSpinBox(self.aOmega_spinBox)
         self.aOmega_spinBox.valueChanged.connect(self.valueChanged)
 
         self.bOmegaLabel = QLabel("ɷB:")
         self.bOmegaLabel.setFixedWidth(30)
         self.bOmega_spinBox = QSpinBox()
-        self.configureSpinBox(self.bOmega_spinBox)
+        self.configureOmegaSpinBox(self.bOmega_spinBox)
         self.bOmega_spinBox.valueChanged.connect(self.valueChanged)
 
         self.phiLabel = QLabel("φ")
         self.phiLabel.setFixedWidth(20)
         self.phi_spinBox = QDoubleSpinBox()
-        self.configureSpinBox(self.phi_spinBox)
+        self.configurePhaseSpinBox(self.phi_spinBox)
         self.phi_spinBox.valueChanged.connect(self.valueChanged)
 
         self.configureLayout()
@@ -55,12 +55,22 @@ class LissajousInterface(QWidget):
     def valueChanged(self):
         self.lissCurve.setVariables(self.aAmplitude_spinBox.value(), self.bAmplitude_spinBox.value(), self.aOmega_spinBox.value(), self.bOmega_spinBox.value(), self.phi_spinBox.value())
         
-    def configureSpinBox(self, amp):
-        amp.setRange(-10, 10)
+    def configureAmpSpinBox(self, amp):
+        amp.setRange(0, 10)
         amp.setWrapping(False)
         amp.setValue(5)
-        if (type(amp) is QDoubleSpinBox):
-            amp.setSingleStep(0.01)
+        amp.setSingleStep(0.01)
+
+    def configureOmegaSpinBox(self, ome):
+        ome.setRange(-10, 10)
+        ome.setWrapping(False)
+        ome.setValue(5)
+
+    def configurePhaseSpinBox(self, phi):
+        phi.setRange(-10, 10)
+        phi.setWrapping(False)
+        phi.setValue(5)
+        phi.setSingleStep(0.01)
 
     def configureLayout(self):
         self.interfaceLayout = QHBoxLayout()
@@ -111,16 +121,27 @@ class LissajousCurve(QWidget):
         self.setLayout(layout)
 
         self.static_canvas = FigureCanvas(Figure(figsize=(5, 3)))
-        self.static_canvas.setFixedWidth(self.height() - 1)
+        self.static_canvas.setFixedWidth(self.height() - 50)
         layout.addWidget(self.static_canvas)
 
         self._static_ax = self.static_canvas.figure.subplots()
         self.setVariables(5,5,5,5,5)
 
+        fontBig = QFont()
+        fontBig.setPointSize(20)
+        fontBig.setFamily("arial")
+
+        fontLittle = QFont()
+        fontLittle.setPointSize(18)
+        fontLittle.setFamily("arial")
+
         a_layout = QVBoxLayout()
         self.a_formulaDescription = QLabel("x = A * sin(ɷA * t + φ)")
+        self.a_formulaDescription.setFont(fontLittle)
         self.a_formulaDescription.setAlignment(Qt.AlignBottom)
-        self.a_formula = QLabel("x = " + str(self.aAmp) + " * sin(" + str(self.aOmega) + " * t + " + str(self.phaseDiff) + ")")
+        self.a_formula = QLabel("x = <b>" + str(self.aAmp) + "</b> * sin(<b>" + str(self.aOmega) + "</b> * t + <b>" + str(self.phaseDiff) + "</b>)")
+        self.a_formula.setTextFormat(Qt.TextFormat.RichText)
+        self.a_formula.setFont(fontBig)
         self.a_formula.setAlignment(Qt.AlignTop)
 
         a_layout.addWidget(self.a_formulaDescription)
@@ -128,9 +149,13 @@ class LissajousCurve(QWidget):
 
         b_layout = QVBoxLayout()
         self.b_formulaDescription = QLabel("y = B * sin(ɷB * t)")
+        self.b_formulaDescription.setFont(fontLittle)
         self.b_formulaDescription.setAlignment(Qt.AlignBottom)
-        self.b_formula = QLabel("y = " + str(self.bAmp) + " * sin(" + str(self.bOmega) + " * t)")
+        self.b_formula = QLabel("y = <b>" + str(self.bAmp) + "</b> * sin(<b>" + str(self.bOmega) + "</b> * t)")
+        self.b_formula.setTextFormat(Qt.TextFormat.RichText)
+        self.b_formula.setFont(fontBig)
         self.b_formula.setAlignment(Qt.AlignTop)
+
         b_layout.addWidget(self.b_formulaDescription)
         b_layout.addWidget(self.b_formula)
 
