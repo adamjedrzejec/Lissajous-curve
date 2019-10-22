@@ -9,7 +9,7 @@ from PySide2.QtWidgets import (QAction, QApplication, QHeaderView, QHBoxLayout, 
 from PySide2.QtCharts import QtCharts
 
 import numpy as np
-from matplotlib.backends.backend_qt5agg import (FigureCanvas, NavigationToolbar2QT as NavigationToolbar)
+from matplotlib.backends.backend_qt5agg import FigureCanvas
 from matplotlib.figure import Figure
 
 class LissajousInterface(QWidget):
@@ -54,7 +54,6 @@ class LissajousInterface(QWidget):
     @Slot()
     def valueChanged(self):
         self.lissCurve.setVariables(self.aAmplitude_spinBox.value(), self.bAmplitude_spinBox.value(), self.aOmega_spinBox.value(), self.bOmega_spinBox.value(), self.phi_spinBox.value())
-        print("Interface:\taAmp = " + str(self.lissCurve.aAmp) + "\taOmega = " + str(self.lissCurve.aOmega))
         
     def configureSpinBox(self, amp):
         amp.setRange(0, 10)
@@ -133,15 +132,12 @@ class LissajousCurve(QWidget):
         t = np.linspace(0, 15, 501)
         self._static_ax.plot(self.aAmp*np.sin(self.aOmega*t), self.bAmp*np.sin(self.bOmega*t), "-b")
         self._static_ax.figure.canvas.draw()
-        print("Curve\t\taAmp = " + str(self.aAmp) + "\taOmega = " + str(self.aOmega) + "\tphase = " + str(self.phaseDiff))
 
     def paintEvent(self, e):
         # draw border
         painter = QPainter(self)
         painter.setPen(QPen(Qt.gray, 1, Qt.SolidLine))
         painter.drawRect((self.width() - self.height()) / 2, 0, self.height()-1 , self.height()-1)
-        
-        # draw sinusoide
 
 
 class MainWindow(QMainWindow):
