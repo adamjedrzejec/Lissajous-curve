@@ -117,8 +117,31 @@ class LissajousCurve(QWidget):
         self._static_ax = self.static_canvas.figure.subplots()
         self.setVariables(5,5,5,5,5)
 
-        self.formula = QLabel("y0 = " + str(self.aAmp) + " * sin(" + str(self.aOmega) + "t + " + str(self.phaseDiff) + ")")
-        layout.addWidget(self.formula)
+        a_layout = QVBoxLayout()
+        self.a_formulaDescription = QLabel("x = A * sin(ɷA * t + φ)")
+        self.a_formulaDescription.setAlignment(Qt.AlignBottom)
+        self.a_formula = QLabel("x = " + str(self.aAmp) + " * sin(" + str(self.aOmega) + " * t + " + str(self.phaseDiff) + ")")
+        self.a_formula.setAlignment(Qt.AlignTop)
+
+        a_layout.addWidget(self.a_formulaDescription)
+        a_layout.addWidget(self.a_formula)
+
+        b_layout = QVBoxLayout()
+        self.b_formulaDescription = QLabel("y = B * sin(ɷB * t)")
+        self.b_formulaDescription.setAlignment(Qt.AlignBottom)
+        self.b_formula = QLabel("y = " + str(self.bAmp) + " * sin(" + str(self.bOmega) + " * t)")
+        self.b_formula.setAlignment(Qt.AlignTop)
+        b_layout.addWidget(self.b_formulaDescription)
+        b_layout.addWidget(self.b_formula)
+
+        ab_layout = QVBoxLayout()
+        ab_layout.addLayout(a_layout)
+        ab_layout.addLayout(b_layout)
+
+        layout.addStretch()
+        layout.addLayout(ab_layout)
+        layout.addStretch()
+
 
     def setVariables(self, aAmp, bAmp, aOmega, bOmega, phaseDiff):
         self.aAmp = aAmp
@@ -133,12 +156,6 @@ class LissajousCurve(QWidget):
         t = np.linspace(-np.pi, np.pi, 300)
         self._static_ax.plot(self.aAmp*np.sin(self.aOmega*t + self.phaseDiff), self.bAmp*np.sin(self.bOmega*t), "-b")
         self._static_ax.figure.canvas.draw()
-
-    def paintEvent(self, e):
-        # draw border
-        painter = QPainter(self)
-        painter.setPen(QPen(Qt.gray, 1, Qt.SolidLine))
-        painter.drawRect((self.width() - self.height()) / 2, 0, self.height()-1 , self.height()-1)
 
 
 class MainWindow(QMainWindow):
