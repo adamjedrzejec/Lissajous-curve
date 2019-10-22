@@ -13,38 +13,49 @@ from matplotlib.backends.backend_qt5agg import (FigureCanvas, NavigationToolbar2
 from matplotlib.figure import Figure
 
 class LissajousInterface(QWidget):
-    def __init__(self):
+    def __init__(self, lissCurve):
         QWidget.__init__(self)
+        self.lissCurve = lissCurve
 
         # set amplitudes
         self.aAmpLabel = QLabel("A:")
         self.aAmpLabel.setFixedWidth(20)
         self.aAmplitude_spinBox = QDoubleSpinBox()
         self.configureSpinBox(self.aAmplitude_spinBox)
+        self.aAmplitude_spinBox.valueChanged.connect(self.valueChanged)
 
         self.bAmpLabel = QLabel("B:")
         self.bAmpLabel.setFixedWidth(20)
         self.bAmplitude_spinBox = QDoubleSpinBox()
         self.configureSpinBox(self.bAmplitude_spinBox)
+        self.bAmplitude_spinBox.valueChanged.connect(self.valueChanged)
 
         # set omegas
         self.aOmegaLabel = QLabel("ɷA:")
         self.aOmegaLabel.setFixedWidth(30)
         self.aOmega_spinBox = QDoubleSpinBox()
         self.configureSpinBox(self.aOmega_spinBox)
+        self.aOmega_spinBox.valueChanged.connect(self.valueChanged)
 
         self.bOmegaLabel = QLabel("ɷB:")
         self.bOmegaLabel.setFixedWidth(30)
         self.bOmega_spinBox = QDoubleSpinBox()
         self.configureSpinBox(self.bOmega_spinBox)
+        self.bOmega_spinBox.valueChanged.connect(self.valueChanged)
 
         self.phiLabel = QLabel("φ")
         self.phiLabel.setFixedWidth(20)
         self.phi_spinBox = QDoubleSpinBox()
         self.configureSpinBox(self.phi_spinBox)
+        self.phi_spinBox.valueChanged.connect(self.valueChanged)
 
         self.configureLayout()
 
+    @Slot()
+    def valueChanged(self):
+        self.lissCurve.setVariables(self.aAmplitude_spinBox.value(), self.bAmplitude_spinBox.value(), self.aOmega_spinBox.value(), self.bOmega_spinBox.value(), self.phi_spinBox.value())
+        print("Interface:\taAmp = " + str(self.lissCurve.aAmp) + "\taOmega = " + str(self.lissCurve.aOmega))
+        
     def configureSpinBox(self, amp):
         amp.setRange(0, 10)
         amp.setWrapping(False)
@@ -99,28 +110,30 @@ class LissajousCurve(QWidget):
         layout = QHBoxLayout()
         self.setLayout(layout)
 
-        static_canvas = FigureCanvas(Figure(figsize=(5, 3)))
-        static_canvas.setFixedWidth(self.height() - 1)
-        layout.addWidget(static_canvas)
+        self.static_canvas = FigureCanvas(Figure(figsize=(5, 3)))
+        self.static_canvas.setFixedWidth(self.height() - 1)
+        layout.addWidget(self.static_canvas)
 
-        self._static_ax = static_canvas.figure.subplots()
-        self.setVariables(5,5,2,1,5)
-        self.updatePlot()
+        self._static_ax = self.static_canvas.figure.subplots()
+        self.setVariables(5,5,5,5,5)
 
         self.formula = QLabel("y0 = " + str(self.aAmp) + " * sin(" + str(self.aOmega) + "t + " + str(self.phaseDiff) + ")")
         layout.addWidget(self.formula)
 
-    @Slot()
     def setVariables(self, aAmp, bAmp, aOmega, bOmega, phaseDiff):
         self.aAmp = aAmp
         self.bAmp = bAmp
         self.aOmega = aOmega
         self.bOmega = bOmega
         self.phaseDiff = phaseDiff
+        self.updatePlot()
 
     def updatePlot(self):
-        t = np.linspace(0, 10, 501)
-        self._static_ax.plot(self.aAmp*np.sin(self.aOmega*t), self.bAmp*np.sin(self.bOmega*t))
+        self._static_ax.clear()
+        t = np.linspace(0, 15, 501)
+        self._static_ax.plot(self.aAmp*np.sin(self.aOmega*t), self.bAmp*np.sin(self.bOmega*t), "-b")
+        self._static_ax.figure.canvas.draw()
+        print("Curve\t\taAmp = " + str(self.aAmp) + "\taOmega = " + str(self.aOmega) + "\tphase = " + str(self.phaseDiff))
 
     def paintEvent(self, e):
         # draw border
@@ -159,10 +172,11 @@ if __name__ == "__main__":
     # Qt Application
     app = QApplication(sys.argv)
     # QWidget
-    lissInterface = LissajousInterface()
+    lissCurve = LissajousCurve()
+
+    lissInterface = LissajousInterface(lissCurve)
     lissInterface.setFixedHeight(150)
 
-    lissCurve = LissajousCurve()
     
     layout = QVBoxLayout()
     layout.addWidget(lissInterface)
