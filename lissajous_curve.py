@@ -5,7 +5,7 @@ from PySide2.QtCore import Qt, Slot
 from PySide2.QtGui import QPainter, QBrush, QPen
 from PySide2.QtWidgets import (QAction, QApplication, QHeaderView, QHBoxLayout, QLabel, QLineEdit,
                                QMainWindow, QPushButton, QTableWidget, QTableWidgetItem,
-                               QVBoxLayout, QWidget, QDoubleSpinBox)
+                               QVBoxLayout, QWidget, QSpinBox, QDoubleSpinBox)
 from PySide2.QtCharts import QtCharts
 
 import numpy as np
@@ -33,13 +33,13 @@ class LissajousInterface(QWidget):
         # set omegas
         self.aOmegaLabel = QLabel("ɷA:")
         self.aOmegaLabel.setFixedWidth(30)
-        self.aOmega_spinBox = QDoubleSpinBox()
+        self.aOmega_spinBox = QSpinBox()
         self.configureSpinBox(self.aOmega_spinBox)
         self.aOmega_spinBox.valueChanged.connect(self.valueChanged)
 
         self.bOmegaLabel = QLabel("ɷB:")
         self.bOmegaLabel.setFixedWidth(30)
-        self.bOmega_spinBox = QDoubleSpinBox()
+        self.bOmega_spinBox = QSpinBox()
         self.configureSpinBox(self.bOmega_spinBox)
         self.bOmega_spinBox.valueChanged.connect(self.valueChanged)
 
@@ -56,10 +56,11 @@ class LissajousInterface(QWidget):
         self.lissCurve.setVariables(self.aAmplitude_spinBox.value(), self.bAmplitude_spinBox.value(), self.aOmega_spinBox.value(), self.bOmega_spinBox.value(), self.phi_spinBox.value())
         
     def configureSpinBox(self, amp):
-        amp.setRange(0, 10)
+        amp.setRange(-10, 10)
         amp.setWrapping(False)
         amp.setValue(5)
-        amp.setSingleStep(0.01)
+        if (type(amp) is QDoubleSpinBox):
+            amp.setSingleStep(0.01)
 
     def configureLayout(self):
         self.interfaceLayout = QHBoxLayout()
@@ -129,8 +130,8 @@ class LissajousCurve(QWidget):
 
     def updatePlot(self):
         self._static_ax.clear()
-        t = np.linspace(0, 15, 501)
-        self._static_ax.plot(self.aAmp*np.sin(self.aOmega*t), self.bAmp*np.sin(self.bOmega*t), "-b")
+        t = np.linspace(-np.pi, np.pi, 300)
+        self._static_ax.plot(self.aAmp*np.sin(self.aOmega*t + self.phaseDiff), self.bAmp*np.sin(self.bOmega*t), "-b")
         self._static_ax.figure.canvas.draw()
 
     def paintEvent(self, e):
