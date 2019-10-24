@@ -125,7 +125,6 @@ class LissajousCurve(QWidget):
         layout.addWidget(self.static_canvas)
 
         self._static_ax = self.static_canvas.figure.subplots()
-        self.setVariables(5,5,5,5,5)
 
         fontBig = QFont()
         fontBig.setPointSize(20)
@@ -139,7 +138,7 @@ class LissajousCurve(QWidget):
         self.a_formulaDescription = QLabel("x = A * sin(ɷA * t + φ)")
         self.a_formulaDescription.setFont(fontLittle)
         self.a_formulaDescription.setAlignment(Qt.AlignBottom)
-        self.a_formula = QLabel("x = <b>" + str(self.aAmp) + "</b> * sin(<b>" + str(self.aOmega) + "</b> * t + <b>" + str(self.phaseDiff) + "</b>)")
+        self.a_formula = QLabel()
         self.a_formula.setTextFormat(Qt.TextFormat.RichText)
         self.a_formula.setFont(fontBig)
         self.a_formula.setAlignment(Qt.AlignTop)
@@ -151,7 +150,7 @@ class LissajousCurve(QWidget):
         self.b_formulaDescription = QLabel("y = B * sin(ɷB * t)")
         self.b_formulaDescription.setFont(fontLittle)
         self.b_formulaDescription.setAlignment(Qt.AlignBottom)
-        self.b_formula = QLabel("y = <b>" + str(self.bAmp) + "</b> * sin(<b>" + str(self.bOmega) + "</b> * t)")
+        self.b_formula = QLabel()
         self.b_formula.setTextFormat(Qt.TextFormat.RichText)
         self.b_formula.setFont(fontBig)
         self.b_formula.setAlignment(Qt.AlignTop)
@@ -167,6 +166,7 @@ class LissajousCurve(QWidget):
         layout.addLayout(ab_layout)
         layout.addStretch()
 
+        self.setVariables(5,5,5,5,5)
 
     def setVariables(self, aAmp, bAmp, aOmega, bOmega, phaseDiff):
         self.aAmp = aAmp
@@ -181,6 +181,11 @@ class LissajousCurve(QWidget):
         t = np.linspace(-np.pi, np.pi, 300)
         self._static_ax.plot(self.aAmp*np.sin(self.aOmega*t + self.phaseDiff), self.bAmp*np.sin(self.bOmega*t), "-b")
         self._static_ax.figure.canvas.draw()
+        self.updateFormula()
+
+    def updateFormula(self):
+        self.a_formula.setText("x = <b>" + ("%.2f" % self.aAmp) + "</b> * sin(<b>" + str(self.aOmega) + "</b> * t + <b>" + ("%.2f" % self.phaseDiff) + "</b>)")
+        self.b_formula.setText("y = <b>" + ("%.2f" % self.bAmp) + "</b> * sin(<b>" + str(self.bOmega) + "</b> * t)")
 
 
 class MainWindow(QMainWindow):
